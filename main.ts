@@ -1,4 +1,7 @@
+import * as path from "path";
 import { Plugin } from "obsidian";
+import { writeFileSync } from "fs";
+import { remote, PrintToPDFOptions } from "electron";
 
 export default class PDFExporter extends Plugin {
     onload() {
@@ -28,8 +31,37 @@ export default class PDFExporter extends Plugin {
             else {
                 // TODO: Show an error to the user until this feature is working
             }
- 
-            console.log(html);
+
+
+            // Rely on electron to render this html in a new window and print it to a pdf
+            const win = new remote.BrowserWindow({ show: true });
+            
+            // Load the html onto the page from memory
+            win.loadURL(`data:text/html;charset=utf-8,${html}`);
+            
+            // Our pdf export options
+            const options: PrintToPDFOptions = {
+                landscape: false,
+                marginsType: 0,
+                printBackground: false,
+                printSelectionOnly: false,
+                pageSize: "A4"
+            };
+
+            // Wait for the html to render
+            win.webContents.on("did-finish-load", async () => {
+                const data = await win.webContents.printToPDF(options);
+                const save = await remote.dialog.showSaveDialog(win, {
+                    title: "Export PDF",
+                    // Take the name of the note and change the extension to 'pdf' to use as the default file name
+                    defaultPath: path.join(path.dirname(state.state?.file), path.basename(state.state?.file, path.extname(state.state?.file)) + ".pdf"),
+                });
+                
+                // Make sure the user didn't cancel the dialouge
+                if (save.filePath) {
+                    writeFileSync(save.filePath, data);
+                }
+            });
         });
     }
 }
