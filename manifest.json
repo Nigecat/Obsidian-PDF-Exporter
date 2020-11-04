@@ -1,0 +1,8 @@
+{
+    "id": "obsidian-pdf-exporter",
+    "name": "PDF Exporter",
+    "version": "0.0.1",
+    "description": "Export your obsidian notes as PDFs.",
+    "author": "Nigecat",
+    "isDesktopOnly": true
+}
