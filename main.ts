@@ -4,8 +4,8 @@ import { writeFileSync } from "fs";
 import { remote as electron, PrintToPDFOptions } from "electron";
 
 export default class PDFExporter extends Plugin {
-    onload() {
-        this.addRibbonIcon("dice", "Export PDF", async () => {
+    onload() {       
+        const exportPDF = () => {
             // Get the current active panel
             // We assume this is the note that the user wants to export
             const current = this.app.workspace.activeLeaf;
@@ -62,6 +62,14 @@ export default class PDFExporter extends Plugin {
                     writeFileSync(save.filePath, data);
                 }
             });
+        };
+
+        this.addCommand({
+            id: "export-pdf",
+            name: "Export PDF",
+            callback: exportPDF,
         });
+
+        this.addRibbonIcon("dice", "Export PDF", exportPDF);
     }
 }
