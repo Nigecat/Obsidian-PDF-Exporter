@@ -16,7 +16,7 @@ export default {
     ],
     plugins: [
         typescript(),
-        nodeResolve({ browser: true }),
+        nodeResolve({ browser: true, preferBuiltins: true }),
         commonjs(),
     ]
 }
